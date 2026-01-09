@@ -8,6 +8,7 @@
 
 @layer base {
   :root {
+    /* Green Theme (Default) */
     --background: 120 5% 5%;
     --foreground: 120 100% 70%;
 
@@ -44,6 +45,142 @@
     --terminal-prompt: 120 100% 65%;
     --terminal-cursor: 120 100% 70%;
     --terminal-scanline: 120 100% 50%;
+  }
+
+  /* Amber Theme */
+  .theme-amber {
+    --background: 30 10% 5%;
+    --foreground: 35 100% 60%;
+
+    --card: 30 10% 8%;
+    --card-foreground: 35 100% 60%;
+
+    --popover: 30 10% 8%;
+    --popover-foreground: 35 100% 60%;
+
+    --primary: 35 100% 50%;
+    --primary-foreground: 30 10% 5%;
+
+    --secondary: 30 30% 15%;
+    --secondary-foreground: 35 100% 60%;
+
+    --muted: 30 15% 12%;
+    --muted-foreground: 35 50% 40%;
+
+    --accent: 35 100% 55%;
+    --accent-foreground: 30 10% 5%;
+
+    --border: 30 40% 20%;
+    --input: 30 40% 20%;
+    --ring: 35 100% 50%;
+
+    --terminal-glow: 35 100% 50%;
+    --terminal-dim: 35 50% 35%;
+    --terminal-prompt: 35 100% 60%;
+    --terminal-cursor: 35 100% 60%;
+    --terminal-scanline: 35 100% 50%;
+  }
+
+  /* Blue Theme */
+  .theme-blue {
+    --background: 220 20% 5%;
+    --foreground: 200 100% 70%;
+
+    --card: 220 20% 8%;
+    --card-foreground: 200 100% 70%;
+
+    --popover: 220 20% 8%;
+    --popover-foreground: 200 100% 70%;
+
+    --primary: 200 100% 50%;
+    --primary-foreground: 220 20% 5%;
+
+    --secondary: 220 30% 15%;
+    --secondary-foreground: 200 100% 70%;
+
+    --muted: 220 15% 12%;
+    --muted-foreground: 200 40% 45%;
+
+    --accent: 200 100% 60%;
+    --accent-foreground: 220 20% 5%;
+
+    --border: 220 40% 20%;
+    --input: 220 40% 20%;
+    --ring: 200 100% 50%;
+
+    --terminal-glow: 200 100% 50%;
+    --terminal-dim: 200 50% 40%;
+    --terminal-prompt: 200 100% 65%;
+    --terminal-cursor: 200 100% 70%;
+    --terminal-scanline: 200 100% 50%;
+  }
+
+  /* Matrix Theme */
+  .theme-matrix {
+    --background: 120 100% 2%;
+    --foreground: 120 100% 55%;
+
+    --card: 120 100% 4%;
+    --card-foreground: 120 100% 55%;
+
+    --popover: 120 100% 4%;
+    --popover-foreground: 120 100% 55%;
+
+    --primary: 120 100% 45%;
+    --primary-foreground: 120 100% 2%;
+
+    --secondary: 120 50% 10%;
+    --secondary-foreground: 120 100% 55%;
+
+    --muted: 120 30% 8%;
+    --muted-foreground: 120 60% 30%;
+
+    --accent: 120 100% 50%;
+    --accent-foreground: 120 100% 2%;
+
+    --border: 120 60% 15%;
+    --input: 120 60% 15%;
+    --ring: 120 100% 45%;
+
+    --terminal-glow: 120 100% 45%;
+    --terminal-dim: 120 70% 25%;
+    --terminal-prompt: 120 100% 50%;
+    --terminal-cursor: 120 100% 55%;
+    --terminal-scanline: 120 100% 40%;
+  }
+
+  /* Retro Pink Theme */
+  .theme-pink {
+    --background: 300 20% 5%;
+    --foreground: 320 100% 75%;
+
+    --card: 300 20% 8%;
+    --card-foreground: 320 100% 75%;
+
+    --popover: 300 20% 8%;
+    --popover-foreground: 320 100% 75%;
+
+    --primary: 320 100% 60%;
+    --primary-foreground: 300 20% 5%;
+
+    --secondary: 300 30% 15%;
+    --secondary-foreground: 320 100% 75%;
+
+    --muted: 300 15% 12%;
+    --muted-foreground: 320 40% 50%;
+
+    --accent: 320 100% 65%;
+    --accent-foreground: 300 20% 5%;
+
+    --border: 300 40% 20%;
+    --input: 300 40% 20%;
+    --ring: 320 100% 60%;
+
+    --terminal-glow: 320 100% 60%;
+    --terminal-dim: 320 50% 40%;
+    --terminal-prompt: 320 100% 70%;
+    --terminal-cursor: 320 100% 75%;
+    --terminal-scanline: 320 100% 50%;
   }
 
   .dark {
@@ -83,7 +220,7 @@
 @layer components {
   .terminal-container {
     @apply relative overflow-hidden;
-    background: radial-gradient(ellipse at center, hsl(120 5% 8%) 0%, hsl(120 5% 3%) 100%);
+    background: radial-gradient(ellipse at center, hsl(var(--card)) 0%, hsl(var(--background)) 100%);
   }
 
   .terminal-glow {
@@ -132,7 +269,7 @@
     background: radial-gradient(
       ellipse at center,
       transparent 0%,
-      hsl(120 5% 0% / 0.3) 100%
+      hsl(var(--background) / 0.4) 100%
     );
     pointer-events: none;
     z-index: 5;
@@ -183,5 +320,13 @@
 
   .terminal-scrollbar::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--muted-foreground));
+  }
+
+  .theme-button {
+    @apply px-2 py-1 text-xs rounded border border-border hover:bg-secondary transition-colors;
+  }
+
+  .theme-button.active {
+    @apply bg-primary text-primary-foreground;
   }
 }

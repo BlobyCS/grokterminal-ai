@@ -8,17 +8,28 @@ interface Message {
   timestamp: Date;
 }
 
+type Theme = "green" | "amber" | "blue" | "matrix" | "pink";
+
+const BLOBY_ASCII = `
+    ____  __    ____  ______  __  __
+   / __ )/ /   / __ \\/ __ ) \\/ / / /
+  / __  / /   / / / / __  |\\  / / / 
+ / /_/ / /___/ /_/ / /_/ / / / /_/  
+/_____/_____/\\____/_____/ /_/ (_)   
+                                    
+`;
+
 const Terminal = () => {
+  const [theme, setTheme] = useState<Theme>("green");
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
       type: "system",
-      content: `╔══════════════════════════════════════════════════════════╗
+      content: `${BLOBY_ASCII}
+╔══════════════════════════════════════════════════════════╗
 ║             BLOBY TERMINAL v1.0 - GROQ Interface          ║
 ╠══════════════════════════════════════════════════════════╣
 ║  Powered by Llama 3.3 70B                                 ║
-║  Type your question and press Enter                       ║
-║  Type 'clear' to clear the terminal                       ║
 ║  Type 'help' for available commands                       ║
 ╚══════════════════════════════════════════════════════════╝`,
       timestamp: new Date(),
@@ -41,6 +52,11 @@ const Terminal = () => {
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    // Apply theme to document
+    document.documentElement.className = theme === "green" ? "" : `theme-${theme}`;
+  }, [theme]);
 
   const generateId = () => Math.random().toString(36).substring(2, 9);
 
@@ -65,16 +81,218 @@ const Terminal = () => {
   const handleHelp = () => {
     addMessage(
       "system",
-      `Available commands:
-  clear    - Clear the terminal
-  help     - Show this help message
-  history  - Show command history
-  
-Keyboard shortcuts:
-  ↑/↓      - Navigate command history
-  Ctrl+L   - Clear terminal
-  Ctrl+C   - Cancel current input`
+      `╔══════════════════════════════════════════════════════════╗
+║                    AVAILABLE COMMANDS                      ║
+╠══════════════════════════════════════════════════════════╣
+║  AI & Chat:                                                ║
+║    [any text]  - Ask the AI anything                       ║
+║                                                            ║
+║  Terminal:                                                 ║
+║    clear       - Clear the terminal                        ║
+║    help        - Show this help message                    ║
+║    history     - Show command history                      ║
+║                                                            ║
+║  Themes:                                                   ║
+║    theme       - Show available themes                     ║
+║    theme [n]   - Switch theme (green/amber/blue/matrix/pink)║
+║                                                            ║
+║  Utilities:                                                ║
+║    date        - Show current date and time                ║
+║    whoami      - About Bloby                               ║
+║    calc [expr] - Calculate math expression                 ║
+║    echo [text] - Echo text back                            ║
+║    joke        - Tell a random joke                        ║
+║    quote       - Get an inspirational quote                ║
+║    ascii [txt] - Convert text to ASCII art                 ║
+║    weather     - Get weather (simulated)                   ║
+║    flip        - Flip a coin                               ║
+║    roll [n]    - Roll a dice (default: 6)                  ║
+║                                                            ║
+║  Keyboard shortcuts:                                       ║
+║    ↑/↓         - Navigate command history                  ║
+║    Ctrl+L      - Clear terminal                            ║
+║    Ctrl+C      - Cancel current input                      ║
+╚══════════════════════════════════════════════════════════╝`
     );
+  };
+
+  const handleTheme = (args: string) => {
+    const themeName = args.toLowerCase().trim() as Theme;
+    const availableThemes: Theme[] = ["green", "amber", "blue", "matrix", "pink"];
+    
+    if (!args) {
+      addMessage(
+        "system",
+        `Available themes: ${availableThemes.join(", ")}
+Current theme: ${theme}
+Usage: theme [name]`
+      );
+      return;
+    }
+
+    if (availableThemes.includes(themeName)) {
+      setTheme(themeName);
+      addMessage("system", `Theme changed to: ${themeName}`);
+    } else {
+      addMessage("system", `Unknown theme: ${args}\nAvailable: ${availableThemes.join(", ")}`);
+    }
+  };
+
+  const handleDate = () => {
+    const now = new Date();
+    addMessage(
+      "system",
+      `Current Date & Time:
+  Date: ${now.toLocaleDateString("cs-CZ", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+  Time: ${now.toLocaleTimeString("cs-CZ")}
+  Unix: ${Math.floor(now.getTime() / 1000)}`
+    );
+  };
+
+  const handleWhoami = () => {
+    addMessage(
+      "system",
+      `${BLOBY_ASCII}
+┌─────────────────────────────────────┐
+│  Name: Bloby                        │
+│  Version: 1.0.0                     │
+│  Model: Llama 3.3 70B (GROQ)        │
+│  Language: Czech / English          │
+│  Purpose: AI Terminal Assistant     │
+│  Status: Online & Ready             │
+└─────────────────────────────────────┘`
+    );
+  };
+
+  const handleCalc = (expression: string) => {
+    if (!expression) {
+      addMessage("system", "Usage: calc [expression]\nExample: calc 2 + 2 * 3");
+      return;
+    }
+    try {
+      // Safe math evaluation
+      const sanitized = expression.replace(/[^0-9+\-*/().%\s]/g, "");
+      const result = Function(`"use strict"; return (${sanitized})`)();
+      addMessage("system", `${expression} = ${result}`);
+    } catch {
+      addMessage("system", `Error: Invalid expression "${expression}"`);
+    }
+  };
+
+  const handleEcho = (text: string) => {
+    addMessage("system", text || "(empty)");
+  };
+
+  const handleJoke = () => {
+    const jokes = [
+      "Why do programmers prefer dark mode? Because light attracts bugs! 🐛",
+      "Why did the developer go broke? Because he used up all his cache! 💸",
+      "A SQL query walks into a bar, walks up to two tables and asks... 'Can I join you?' 🍺",
+      "There are only 10 types of people in the world: those who understand binary and those who don't. 🤓",
+      "Why do Java developers wear glasses? Because they don't C#! 👓",
+      "What's a programmer's favorite hangout place? Foo Bar! 🍻",
+      "How do you comfort a JavaScript bug? You console it! 🖥️",
+      "Why was the JavaScript developer sad? Because he didn't Node how to Express himself! 😢",
+      "What do you call 8 hobbits? A hobbyte! 🧙",
+      "Why did the programmer quit his job? Because he didn't get arrays! 📊",
+    ];
+    const randomJoke = jokes[Math.floor(Math.random() * jokes.length)];
+    addMessage("system", randomJoke);
+  };
+
+  const handleQuote = () => {
+    const quotes = [
+      '"The only way to do great work is to love what you do." - Steve Jobs',
+      '"Innovation distinguishes between a leader and a follower." - Steve Jobs',
+      '"Stay hungry, stay foolish." - Steve Jobs',
+      '"Code is like humor. When you have to explain it, it\'s bad." - Cory House',
+      '"First, solve the problem. Then, write the code." - John Johnson',
+      '"Experience is the name everyone gives to their mistakes." - Oscar Wilde',
+      '"Programming isn\'t about what you know; it\'s about what you can figure out." - Chris Pine',
+      '"The best error message is the one that never shows up." - Thomas Fuchs',
+      '"Simplicity is the soul of efficiency." - Austin Freeman',
+      '"Talk is cheap. Show me the code." - Linus Torvalds',
+    ];
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    addMessage("system", randomQuote);
+  };
+
+  const handleAscii = (text: string) => {
+    if (!text) {
+      addMessage("system", "Usage: ascii [text]");
+      return;
+    }
+    // Simple ASCII art generator
+    const asciiChars: Record<string, string[]> = {
+      A: ["  █  ", " █ █ ", "█████", "█   █", "█   █"],
+      B: ["████ ", "█   █", "████ ", "█   █", "████ "],
+      C: [" ████", "█    ", "█    ", "█    ", " ████"],
+      D: ["████ ", "█   █", "█   █", "█   █", "████ "],
+      E: ["█████", "█    ", "████ ", "█    ", "█████"],
+      F: ["█████", "█    ", "████ ", "█    ", "█    "],
+      G: [" ████", "█    ", "█  ██", "█   █", " ████"],
+      H: ["█   █", "█   █", "█████", "█   █", "█   █"],
+      I: ["█████", "  █  ", "  █  ", "  █  ", "█████"],
+      J: ["█████", "   █ ", "   █ ", "█  █ ", " ██  "],
+      K: ["█   █", "█  █ ", "███  ", "█  █ ", "█   █"],
+      L: ["█    ", "█    ", "█    ", "█    ", "█████"],
+      M: ["█   █", "██ ██", "█ █ █", "█   █", "█   █"],
+      N: ["█   █", "██  █", "█ █ █", "█  ██", "█   █"],
+      O: [" ███ ", "█   █", "█   █", "█   █", " ███ "],
+      P: ["████ ", "█   █", "████ ", "█    ", "█    "],
+      Q: [" ███ ", "█   █", "█ █ █", "█  █ ", " ██ █"],
+      R: ["████ ", "█   █", "████ ", "█  █ ", "█   █"],
+      S: [" ████", "█    ", " ███ ", "    █", "████ "],
+      T: ["█████", "  █  ", "  █  ", "  █  ", "  █  "],
+      U: ["█   █", "█   █", "█   █", "█   █", " ███ "],
+      V: ["█   █", "█   █", "█   █", " █ █ ", "  █  "],
+      W: ["█   █", "█   █", "█ █ █", "██ ██", "█   █"],
+      X: ["█   █", " █ █ ", "  █  ", " █ █ ", "█   █"],
+      Y: ["█   █", " █ █ ", "  █  ", "  █  ", "  █  "],
+      Z: ["█████", "   █ ", "  █  ", " █   ", "█████"],
+      " ": ["     ", "     ", "     ", "     ", "     "],
+    };
+    
+    const upperText = text.toUpperCase().slice(0, 10);
+    const lines = ["", "", "", "", ""];
+    for (const char of upperText) {
+      const art = asciiChars[char] || ["?????", "?????", "?????", "?????", "?????"];
+      for (let i = 0; i < 5; i++) {
+        lines[i] += art[i] + " ";
+      }
+    }
+    addMessage("system", lines.join("\n"));
+  };
+
+  const handleWeather = () => {
+    const conditions = ["☀️ Sunny", "🌤️ Partly Cloudy", "☁️ Cloudy", "🌧️ Rainy", "⛈️ Stormy", "❄️ Snowy"];
+    const temps = Math.floor(Math.random() * 35) - 5;
+    const humidity = Math.floor(Math.random() * 60) + 40;
+    const condition = conditions[Math.floor(Math.random() * conditions.length)];
+    
+    addMessage(
+      "system",
+      `┌─────────────────────────────┐
+│      WEATHER REPORT         │
+├─────────────────────────────┤
+│  Condition: ${condition.padEnd(14)}│
+│  Temperature: ${temps}°C${temps >= 0 ? " " : ""}         │
+│  Humidity: ${humidity}%            │
+│  Wind: ${Math.floor(Math.random() * 30) + 5} km/h           │
+└─────────────────────────────┘
+(Simulated data)`
+    );
+  };
+
+  const handleFlip = () => {
+    const result = Math.random() > 0.5 ? "HEADS 🪙" : "TAILS 🪙";
+    addMessage("system", `Flipping coin... ${result}`);
+  };
+
+  const handleRoll = (sides: string) => {
+    const numSides = parseInt(sides) || 6;
+    const result = Math.floor(Math.random() * numSides) + 1;
+    addMessage("system", `🎲 Rolling d${numSides}... ${result}!`);
   };
 
   const handleSubmit = async () => {
@@ -89,25 +307,60 @@ Keyboard shortcuts:
     addMessage("user", trimmedInput);
     setInput("");
 
+    // Parse command
+    const [command, ...args] = trimmedInput.split(" ");
+    const argsString = args.join(" ");
+    const lowerCommand = command.toLowerCase();
+
     // Handle built-in commands
-    if (trimmedInput.toLowerCase() === "clear") {
-      handleClear();
-      return;
-    }
-
-    if (trimmedInput.toLowerCase() === "help") {
-      handleHelp();
-      return;
-    }
-
-    if (trimmedInput.toLowerCase() === "history") {
-      addMessage(
-        "system",
-        commandHistory.length > 0
-          ? `Command history:\n${commandHistory.map((cmd, i) => `  ${i + 1}. ${cmd}`).join("\n")}`
-          : "No command history yet."
-      );
-      return;
+    switch (lowerCommand) {
+      case "clear":
+        handleClear();
+        return;
+      case "help":
+        handleHelp();
+        return;
+      case "history":
+        addMessage(
+          "system",
+          commandHistory.length > 0
+            ? `Command history:\n${commandHistory.slice(-20).map((cmd, i) => `  ${i + 1}. ${cmd}`).join("\n")}`
+            : "No command history yet."
+        );
+        return;
+      case "theme":
+        handleTheme(argsString);
+        return;
+      case "date":
+        handleDate();
+        return;
+      case "whoami":
+        handleWhoami();
+        return;
+      case "calc":
+        handleCalc(argsString);
+        return;
+      case "echo":
+        handleEcho(argsString);
+        return;
+      case "joke":
+        handleJoke();
+        return;
+      case "quote":
+        handleQuote();
+        return;
+      case "ascii":
+        handleAscii(argsString);
+        return;
+      case "weather":
+        handleWeather();
+        return;
+      case "flip":
+        handleFlip();
+        return;
+      case "roll":
+        handleRoll(argsString);
+        return;
     }
 
     // Send to AI
@@ -116,7 +369,7 @@ Keyboard shortcuts:
       // Build conversation history for context
       const conversationHistory = messages
         .filter((m) => m.type === "user" || m.type === "ai")
-        .slice(-10) // Keep last 10 messages for context
+        .slice(-10)
         .map((m) => ({
           role: m.type === "user" ? "user" : "assistant",
           content: m.content,
@@ -193,7 +446,21 @@ Keyboard shortcuts:
           </div>
           <span className="terminal-text text-sm">bloby@groq:~</span>
         </div>
-        <span className="terminal-dim text-xs">{formatTimestamp(new Date())}</span>
+        <div className="flex items-center gap-3">
+          <div className="flex gap-1">
+            {(["green", "amber", "blue", "matrix", "pink"] as Theme[]).map((t) => (
+              <button
+                key={t}
+                onClick={() => setTheme(t)}
+                className={`theme-button ${theme === t ? "active" : ""}`}
+                title={t}
+              >
+                {t.charAt(0).toUpperCase()}
+              </button>
+            ))}
+          </div>
+          <span className="terminal-dim text-xs">{formatTimestamp(new Date())}</span>
+        </div>
       </div>
 
       {/* Terminal content */}
@@ -258,7 +525,7 @@ Keyboard shortcuts:
 
       {/* Status bar */}
       <div className="border-t border-border px-4 py-1 flex items-center justify-between text-xs terminal-dim z-20 relative">
-        <span>GROQ API | Llama 3.3 70B</span>
+        <span>GROQ API | Llama 3.3 70B | Theme: {theme}</span>
         <span>{messages.filter((m) => m.type === "user").length} queries</span>
       </div>
     </div>
