@@ -14,7 +14,7 @@ const Terminal = () => {
       id: "welcome",
       type: "system",
       content: `╔══════════════════════════════════════════════════════════╗
-║           AI TERMINAL v1.0 - GROQ LLM Interface           ║
+║             BLOBY TERMINAL v1.0 - GROQ Interface          ║
 ╠══════════════════════════════════════════════════════════╣
 ║  Powered by Llama 3.3 70B                                 ║
 ║  Type your question and press Enter                       ║
@@ -191,7 +191,7 @@ Keyboard shortcuts:
             <div className="w-3 h-3 rounded-full bg-yellow-500" />
             <div className="w-3 h-3 rounded-full bg-primary" />
           </div>
-          <span className="terminal-text text-sm">ai-terminal@groq:~</span>
+          <span className="terminal-text text-sm">bloby@groq:~</span>
         </div>
         <span className="terminal-dim text-xs">{formatTimestamp(new Date())}</span>
       </div>
@@ -206,7 +206,7 @@ Keyboard shortcuts:
           <div key={msg.id} className="mb-3 fade-in">
             {msg.type === "user" && (
               <div className="flex items-start gap-2">
-                <span className="terminal-prompt font-bold">ai-web&gt;</span>
+                <span className="terminal-prompt font-bold">bloby&gt;</span>
                 <span className="terminal-text">{msg.content}</span>
               </div>
             )}
@@ -238,7 +238,7 @@ Keyboard shortcuts:
 
         {/* Input line */}
         <div className="flex items-center gap-2">
-          <span className="terminal-prompt font-bold">ai-web&gt;</span>
+          <span className="terminal-prompt font-bold">bloby&gt;</span>
           <div className="flex-1 flex items-center">
             <input
               ref={inputRef}
