@@ -91,6 +91,7 @@ const Terminal = () => {
 ║    clear       - Clear the terminal                        ║
 ║    help        - Show this help message                    ║
 ║    history     - Show command history                      ║
+║    neofetch    - Display system info                       ║
 ║                                                            ║
 ║  Themes:                                                   ║
 ║    theme       - Show available themes                     ║
@@ -295,6 +296,36 @@ Usage: theme [name]`
     addMessage("system", `🎲 Rolling d${numSides}... ${result}!`);
   };
 
+  const handleNeofetch = () => {
+    const uptime = Math.floor(Math.random() * 48) + 1;
+    const memoryUsed = Math.floor(Math.random() * 60) + 20;
+    const cpuUsage = Math.floor(Math.random() * 40) + 10;
+    const now = new Date();
+    
+    const neofetchOutput = `
+\x1b[32m    ____  __    ____  ______  __  __\x1b[0m      bloby@groq
+\x1b[32m   / __ )/ /   / __ \\/ __ ) \\/ / / /\x1b[0m      ─────────────────────
+\x1b[32m  / __  / /   / / / / __  |\\  / / / \x1b[0m      OS: BlobyOS 1.0.0
+\x1b[32m / /_/ / /___/ /_/ / /_/ / / / /_/  \x1b[0m      Host: Bloby Terminal
+\x1b[32m/_____/_____/\\____/_____/ /_/ (_)   \x1b[0m      Kernel: GROQ-LLM-3.3-70B
+                                        Uptime: ${uptime}h ${Math.floor(Math.random() * 60)}m
+    ██████████████████████████          Shell: bloby-sh 1.0
+    ██                      ██          Resolution: ${window.innerWidth}x${window.innerHeight}
+    ██   ████████████████   ██          Theme: ${theme}
+    ██   ██            ██   ██          Terminal: Bloby Terminal
+    ██   ██   ██████   ██   ██          CPU: AI Neural Core @ ∞ GHz (${cpuUsage}%)
+    ██   ██   ██  ██   ██   ██          Memory: ${memoryUsed}% of ∞ TB
+    ██   ██   ██████   ██   ██          GPU: Quantum Renderer 9000
+    ██   ██            ██   ██          Disk: ${Math.floor(Math.random() * 40) + 10}% of ∞ PB
+    ██   ████████████████   ██          Network: Connected to GROQ Cloud
+    ██                      ██          Locale: cs_CZ.UTF-8
+    ██████████████████████████          Time: ${now.toLocaleTimeString("cs-CZ")}
+                                        
+    ████ ████ ████ ████ ████ ████       Colors: ■ ■ ■ ■ ■ ■ ■ ■`;
+
+    addMessage("system", neofetchOutput);
+  };
+
   const handleSubmit = async () => {
     const trimmedInput = input.trim();
     if (!trimmedInput || isLoading) return;
@@ -360,6 +391,9 @@ Usage: theme [name]`
         return;
       case "roll":
         handleRoll(argsString);
+        return;
+      case "neofetch":
+        handleNeofetch();
         return;
     }
 
