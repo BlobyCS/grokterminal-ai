@@ -39,6 +39,7 @@ const Terminal = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+  const [startTime] = useState(() => Date.now());
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
 
@@ -92,6 +93,7 @@ const Terminal = () => {
 ║    help        - Show this help message                    ║
 ║    history     - Show command history                      ║
 ║    neofetch    - Display system info                       ║
+║    uptime      - Show terminal uptime                      ║
 ║    export      - Export chat history to file               ║
 ║                                                            ║
 ║  Fun:                                                      ║
@@ -315,6 +317,20 @@ Usage: theme [name]`
     addMessage("system", neofetchOutput);
   };
 
+  const handleUptime = () => {
+    const elapsed = Date.now() - startTime;
+    const seconds = Math.floor(elapsed / 1000) % 60;
+    const minutes = Math.floor(elapsed / 60000) % 60;
+    const hours = Math.floor(elapsed / 3600000);
+    
+    const parts = [];
+    if (hours > 0) parts.push(`${hours}h`);
+    if (minutes > 0) parts.push(`${minutes}m`);
+    parts.push(`${seconds}s`);
+    
+    addMessage("system", `⏱️ Terminal uptime: ${parts.join(" ")}`);
+  };
+
   const handleExport = () => {
     const exportContent = messages
       .map((msg) => {
@@ -467,6 +483,9 @@ Wake up, Neo... The Matrix has you.`
         return;
       case "matrix":
         handleMatrix();
+        return;
+      case "uptime":
+        handleUptime();
         return;
     }
 
