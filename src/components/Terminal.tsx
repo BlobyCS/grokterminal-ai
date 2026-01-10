@@ -92,6 +92,16 @@ const Terminal = () => {
 ║    help        - Show this help message                    ║
 ║    history     - Show command history                      ║
 ║    neofetch    - Display system info                       ║
+║    export      - Export chat history to file               ║
+║                                                            ║
+║  Fun:                                                      ║
+║    matrix      - Matrix rain animation                     ║
+║    fortune     - Get a fortune/wisdom                      ║
+║    joke        - Tell a random joke                        ║
+║    quote       - Get an inspirational quote                ║
+║    ascii [txt] - Convert text to ASCII art                 ║
+║    flip        - Flip a coin                               ║
+║    roll [n]    - Roll a dice (default: 6)                  ║
 ║                                                            ║
 ║  Themes:                                                   ║
 ║    theme       - Show available themes                     ║
@@ -102,12 +112,7 @@ const Terminal = () => {
 ║    whoami      - About Bloby                               ║
 ║    calc [expr] - Calculate math expression                 ║
 ║    echo [text] - Echo text back                            ║
-║    joke        - Tell a random joke                        ║
-║    quote       - Get an inspirational quote                ║
-║    ascii [txt] - Convert text to ASCII art                 ║
 ║    weather     - Get weather (simulated)                   ║
-║    flip        - Flip a coin                               ║
-║    roll [n]    - Roll a dice (default: 6)                  ║
 ║                                                            ║
 ║  Keyboard shortcuts:                                       ║
 ║    ↑/↓         - Navigate command history                  ║
@@ -297,33 +302,92 @@ Usage: theme [name]`
   };
 
   const handleNeofetch = () => {
-    const uptime = Math.floor(Math.random() * 48) + 1;
-    const memoryUsed = Math.floor(Math.random() * 60) + 20;
-    const cpuUsage = Math.floor(Math.random() * 40) + 10;
     const now = new Date();
     
-    const neofetchOutput = `
-\x1b[32m    ____  __    ____  ______  __  __\x1b[0m      bloby@groq
-\x1b[32m   / __ )/ /   / __ \\/ __ ) \\/ / / /\x1b[0m      ─────────────────────
-\x1b[32m  / __  / /   / / / / __  |\\  / / / \x1b[0m      OS: BlobyOS 1.0.0
-\x1b[32m / /_/ / /___/ /_/ / /_/ / / / /_/  \x1b[0m      Host: Bloby Terminal
-\x1b[32m/_____/_____/\\____/_____/ /_/ (_)   \x1b[0m      Kernel: GROQ-LLM-3.3-70B
-                                        Uptime: ${uptime}h ${Math.floor(Math.random() * 60)}m
-    ██████████████████████████          Shell: bloby-sh 1.0
-    ██                      ██          Resolution: ${window.innerWidth}x${window.innerHeight}
-    ██   ████████████████   ██          Theme: ${theme}
-    ██   ██            ██   ██          Terminal: Bloby Terminal
-    ██   ██   ██████   ██   ██          CPU: AI Neural Core @ ∞ GHz (${cpuUsage}%)
-    ██   ██   ██  ██   ██   ██          Memory: ${memoryUsed}% of ∞ TB
-    ██   ██   ██████   ██   ██          GPU: Quantum Renderer 9000
-    ██   ██            ██   ██          Disk: ${Math.floor(Math.random() * 40) + 10}% of ∞ PB
-    ██   ████████████████   ██          Network: Connected to GROQ Cloud
-    ██                      ██          Locale: cs_CZ.UTF-8
-    ██████████████████████████          Time: ${now.toLocaleTimeString("cs-CZ")}
-                                        
-    ████ ████ ████ ████ ████ ████       Colors: ■ ■ ■ ■ ■ ■ ■ ■`;
+    const neofetchOutput = `    ____  __    ____  ______  __  __       bloby@groq
+   / __ )/ /   / __ \\/ __ ) \\/ / / /       ─────────────
+  / __  / /   / / / / __  |\\  / / /        OS: BlobyOS 1.0
+ / /_/ / /___/ /_/ / /_/ / / / /_/         Model: Llama 3.3 70B
+/_____/_____/\\____/_____/ /_/ (_)          Theme: ${theme}
+                                           Shell: bloby-sh
+                                           Time: ${now.toLocaleTimeString("cs-CZ")}`;
 
     addMessage("system", neofetchOutput);
+  };
+
+  const handleExport = () => {
+    const exportContent = messages
+      .map((msg) => {
+        const time = msg.timestamp.toLocaleString("cs-CZ");
+        const prefix = msg.type === "user" ? "[YOU]" : msg.type === "ai" ? "[AI]" : "[SYS]";
+        return `[${time}] ${prefix} ${msg.content}`;
+      })
+      .join("\n\n" + "─".repeat(60) + "\n\n");
+
+    const blob = new Blob(
+      [`BLOBY TERMINAL - Chat Export\nExported: ${new Date().toLocaleString("cs-CZ")}\n${"═".repeat(60)}\n\n${exportContent}`],
+      { type: "text/plain;charset=utf-8" }
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `bloby-chat-${Date.now()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    addMessage("system", "📄 Chat history exported successfully!");
+  };
+
+  const handleFortune = () => {
+    const fortunes = [
+      "🔮 Tvůj kód bude dnes fungovat napoprvé.",
+      "🌟 Brzy najdeš řešení problému, který tě trápí.",
+      "🎯 Soustřeď se na jeden úkol a úspěch přijde.",
+      "💡 Odpověď, kterou hledáš, je jednodušší, než si myslíš.",
+      "🚀 Velké věci čekají ty, kdo se nebojí experimentovat.",
+      "🌈 Po každém bugu přichází moment, kdy všechno funguje.",
+      "⭐ Dnes je dobrý den naučit se něco nového.",
+      "🎲 Náhoda přeje připraveným.",
+      "🔥 Tvá vytrvalost bude odměněna.",
+      "🌙 Někdy je nejlepší řešení jít spát a zkusit to ráno.",
+      "🎭 Ne každý bug je chyba - někdy je to feature.",
+      "🏆 Každý expert byl jednou začátečník.",
+      "🌊 Nech věci plynout, řešení přijde samo.",
+      "💎 V jednoduchosti je krása - i v kódu.",
+      "🦋 Malá změna může mít velký dopad.",
+    ];
+    const fortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+    addMessage("system", fortune);
+  };
+
+  const handleMatrix = () => {
+    const matrixChars = "ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789";
+    const width = 60;
+    const height = 15;
+    
+    const generateLine = () => {
+      let line = "";
+      for (let i = 0; i < width; i++) {
+        if (Math.random() > 0.7) {
+          line += matrixChars[Math.floor(Math.random() * matrixChars.length)];
+        } else {
+          line += " ";
+        }
+      }
+      return line;
+    };
+
+    const lines: string[] = [];
+    for (let i = 0; i < height; i++) {
+      lines.push(generateLine());
+    }
+
+    addMessage(
+      "system",
+      `┌${"─".repeat(width)}┐
+${lines.map((l) => "│" + l + "│").join("\n")}
+└${"─".repeat(width)}┘
+Wake up, Neo... The Matrix has you.`
+    );
   };
 
   const handleSubmit = async () => {
@@ -394,6 +458,15 @@ Usage: theme [name]`
         return;
       case "neofetch":
         handleNeofetch();
+        return;
+      case "export":
+        handleExport();
+        return;
+      case "fortune":
+        handleFortune();
+        return;
+      case "matrix":
+        handleMatrix();
         return;
     }
 
