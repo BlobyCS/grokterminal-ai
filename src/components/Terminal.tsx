@@ -28,7 +28,7 @@ const Terminal = () => {
       type: "system",
       content: `${BLOBY_ASCII}
 ╔══════════════════════════════════════════════════════════╗
-║             BLOBY TERMINAL v1.0 - GROQ Interface          ║
+║             BLOBY TERMINAL v1.1 - GROQ Interface          ║
 ╠══════════════════════════════════════════════════════════╣
 ║  Powered by Llama 3.3 70B                                 ║
 ║  Type 'help' for available commands                       ║
@@ -110,6 +110,7 @@ const Terminal = () => {
 ║    history     - Show command history                      ║
 ║    neofetch    - Display system info                       ║
 ║    uptime      - Show terminal uptime                      ║
+║    sessions    - Show session statistics                   ║
 ║    export      - Export chat history to file               ║
 ║                                                            ║
 ║  Fun:                                                      ║
@@ -324,7 +325,7 @@ Usage: theme [name]`
     
     const neofetchOutput = `    ____  __    ____  ______  __  __       bloby@groq
    / __ )/ /   / __ \\/ __ ) \\/ / / /       ─────────────
-  / __  / /   / / / / __  |\\  / / /        OS: BlobyOS 1.0
+  / __  / /   / / / / __  |\\  / / /        OS: BlobyOS v1.1
  / /_/ / /___/ /_/ / /_/ / / / /_/         Model: Llama 3.3 70B
 /_____/_____/\\____/_____/ /_/ (_)          Theme: ${theme}
                                            Shell: bloby-sh
@@ -345,6 +346,57 @@ Usage: theme [name]`
     parts.push(`${seconds}s`);
     
     addMessage("system", `⏱️ Terminal uptime: ${parts.join(" ")}`);
+  };
+
+  const handleSessions = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("chat_messages")
+        .select("session_id, type, created_at");
+      
+      if (error) {
+        addMessage("system", `❌ Error fetching sessions: ${error.message}`, false);
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        addMessage("system", "📊 No sessions recorded yet.", false);
+        return;
+      }
+
+      const sessions = new Map<string, { count: number; firstMsg: Date; lastMsg: Date }>();
+      
+      data.forEach((msg) => {
+        const existing = sessions.get(msg.session_id);
+        const msgDate = new Date(msg.created_at);
+        if (existing) {
+          existing.count++;
+          if (msgDate < existing.firstMsg) existing.firstMsg = msgDate;
+          if (msgDate > existing.lastMsg) existing.lastMsg = msgDate;
+        } else {
+          sessions.set(msg.session_id, { count: 1, firstMsg: msgDate, lastMsg: msgDate });
+        }
+      });
+
+      const totalMessages = data.length;
+      const userMessages = data.filter((m) => m.type === "user").length;
+      const aiMessages = data.filter((m) => m.type === "ai").length;
+
+      addMessage(
+        "system",
+        `📊 SESSION STATISTICS v1.1
+┌────────────────────────────────┐
+│  Total Sessions: ${String(sessions.size).padEnd(13)}│
+│  Total Messages: ${String(totalMessages).padEnd(13)}│
+│  User Messages:  ${String(userMessages).padEnd(13)}│
+│  AI Responses:   ${String(aiMessages).padEnd(13)}│
+│  Current ID:     ${sessionId.slice(0, 8)}...     │
+└────────────────────────────────┘`,
+        false
+      );
+    } catch (err) {
+      addMessage("system", "❌ Failed to fetch session stats.", false);
+    }
   };
 
   const handleExport = () => {
@@ -502,6 +554,9 @@ Wake up, Neo... The Matrix has you.`
         return;
       case "uptime":
         handleUptime();
+        return;
+      case "sessions":
+        handleSessions();
         return;
     }
 
