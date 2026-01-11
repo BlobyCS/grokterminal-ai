@@ -21,6 +21,7 @@ const BLOBY_ASCII = `
 
 const Terminal = () => {
   const [theme, setTheme] = useState<Theme>("green");
+  const [sessionId] = useState(() => Math.random().toString(36).substring(2, 15));
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -61,11 +62,26 @@ const Terminal = () => {
 
   const generateId = () => Math.random().toString(36).substring(2, 9);
 
-  const addMessage = (type: Message["type"], content: string) => {
+  const saveMessageToDb = async (type: Message["type"], content: string) => {
+    try {
+      await supabase.from("chat_messages").insert({
+        session_id: sessionId,
+        type,
+        content,
+      });
+    } catch (error) {
+      console.error("Failed to save message:", error);
+    }
+  };
+
+  const addMessage = (type: Message["type"], content: string, saveToDb = true) => {
     setMessages((prev) => [
       ...prev,
       { id: generateId(), type, content, timestamp: new Date() },
     ]);
+    if (saveToDb && (type === "user" || type === "ai")) {
+      saveMessageToDb(type, content);
+    }
   };
 
   const handleClear = () => {
