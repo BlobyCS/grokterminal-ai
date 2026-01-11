@@ -634,17 +634,21 @@ Wake up, Neo... The Matrix has you.`
       <div className="scanlines" />
       
       {/* Terminal header */}
-      <div className="border-b border-border px-4 py-2 flex items-center justify-between z-20 relative">
-        <div className="flex items-center gap-3">
-          <div className="flex gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-destructive" />
-            <div className="w-3 h-3 rounded-full bg-yellow-500" />
-            <div className="w-3 h-3 rounded-full bg-primary" />
+      <div className="glass-panel-strong px-5 py-3 flex items-center justify-between z-20 relative">
+        <div className="flex items-center gap-4">
+          <div className="flex gap-2">
+            <div className="w-3 h-3 rounded-full bg-red-500 shadow-lg shadow-red-500/30 hover:scale-110 transition-transform cursor-pointer" />
+            <div className="w-3 h-3 rounded-full bg-yellow-500 shadow-lg shadow-yellow-500/30 hover:scale-110 transition-transform cursor-pointer" />
+            <div className="w-3 h-3 rounded-full bg-green-500 shadow-lg shadow-green-500/30 hover:scale-110 transition-transform cursor-pointer" />
           </div>
-          <span className="terminal-text text-sm">bloby@groq:~</span>
+          <div className="flex items-center gap-2">
+            <div className="status-indicator" />
+            <span className="terminal-text text-sm font-semibold">bloby@groq</span>
+            <span className="text-muted-foreground text-sm">:~</span>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex gap-1">
+        <div className="flex items-center gap-4">
+          <div className="flex gap-1.5 p-1 rounded-lg bg-secondary/30">
             {(["green", "amber", "blue", "matrix", "pink"] as Theme[]).map((t) => (
               <button
                 key={t}
@@ -656,74 +660,99 @@ Wake up, Neo... The Matrix has you.`
               </button>
             ))}
           </div>
-          <span className="terminal-dim text-xs">{formatTimestamp(new Date())}</span>
+          <span className="terminal-dim text-xs font-medium px-3 py-1 rounded-full bg-secondary/30">
+            {formatTimestamp(new Date())}
+          </span>
         </div>
       </div>
 
       {/* Terminal content */}
       <div
         ref={terminalRef}
-        className="flex-1 overflow-y-auto p-4 terminal-scrollbar z-20 relative"
+        className="flex-1 overflow-y-auto p-6 terminal-scrollbar z-20 relative space-y-4"
         onClick={() => inputRef.current?.focus()}
       >
         {messages.map((msg) => (
-          <div key={msg.id} className="mb-3 fade-in">
+          <div key={msg.id} className="fade-in">
             {msg.type === "user" && (
-              <div className="flex items-start gap-2">
-                <span className="terminal-prompt font-bold">bloby&gt;</span>
-                <span className="terminal-text">{msg.content}</span>
+              <div className="message-card message-card-user">
+                <div className="flex items-start gap-3">
+                  <span className="terminal-prompt font-bold text-sm">❯</span>
+                  <span className="terminal-text">{msg.content}</span>
+                </div>
               </div>
             )}
             {msg.type === "ai" && (
-              <div className="pl-6 mt-1">
-                <pre className="terminal-text whitespace-pre-wrap font-mono text-sm leading-relaxed">
-                  {msg.content}
-                </pre>
+              <div className="message-card message-card-ai">
+                <div className="flex items-start gap-3">
+                  <span className="text-primary text-sm">✦</span>
+                  <pre className="terminal-glow-subtle whitespace-pre-wrap font-mono text-sm leading-relaxed flex-1">
+                    {msg.content}
+                  </pre>
+                </div>
               </div>
             )}
             {msg.type === "system" && (
-              <div className="terminal-dim">
-                <pre className="whitespace-pre-wrap font-mono text-sm">{msg.content}</pre>
+              <div className="message-card message-card-system">
+                <pre className="terminal-dim whitespace-pre-wrap font-mono text-sm leading-relaxed">{msg.content}</pre>
               </div>
             )}
           </div>
         ))}
 
         {isLoading && (
-          <div className="mb-3 fade-in">
-            <div className="flex items-center gap-2 terminal-dim">
-              <span className="animate-pulse">Processing</span>
-              <span className="animate-bounce">.</span>
-              <span className="animate-bounce" style={{ animationDelay: "0.1s" }}>.</span>
-              <span className="animate-bounce" style={{ animationDelay: "0.2s" }}>.</span>
+          <div className="fade-in">
+            <div className="message-card flex items-center gap-3">
+              <span className="terminal-dim text-sm">Processing</span>
+              <div className="loading-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
             </div>
           </div>
         )}
 
         {/* Input line */}
-        <div className="flex items-center gap-2">
-          <span className="terminal-prompt font-bold">bloby&gt;</span>
-          <div className="flex-1 flex items-center">
-            <input
-              ref={inputRef}
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              disabled={isLoading}
-              className="terminal-input terminal-text flex-1"
-              autoComplete="off"
-              spellCheck={false}
-            />
-            <span className="typing-cursor" />
+        <div className="message-card glow-border bg-secondary/20 hover:bg-secondary/30 transition-colors">
+          <div className="flex items-center gap-3">
+            <span className="terminal-prompt font-bold text-sm">❯</span>
+            <div className="flex-1 flex items-center">
+              <input
+                ref={inputRef}
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={isLoading}
+                className="terminal-input terminal-glow-subtle flex-1 text-sm"
+                placeholder="Type a command or ask something..."
+                autoComplete="off"
+                spellCheck={false}
+              />
+              <span className="typing-cursor" />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Status bar */}
-      <div className="border-t border-border px-4 py-1 flex items-center justify-between text-xs terminal-dim z-20 relative">
-        <span>GROQ API | Llama 3.3 70B | Theme: {theme}</span>
-        <span>{messages.filter((m) => m.type === "user").length} queries</span>
+      <div className="glass-panel px-5 py-2 flex items-center justify-between text-xs z-20 relative">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className="status-indicator" />
+            <span className="terminal-dim font-medium">GROQ API</span>
+          </div>
+          <span className="text-muted-foreground">•</span>
+          <span className="gradient-text font-semibold">Llama 3.3 70B</span>
+          <span className="text-muted-foreground">•</span>
+          <span className="terminal-dim">Theme: <span className="text-foreground">{theme}</span></span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="terminal-dim">{messages.filter((m) => m.type === "user").length} queries</span>
+          <span className="text-muted-foreground">•</span>
+          <span className="terminal-dim">v1.1</span>
+        </div>
       </div>
     </div>
   );
