@@ -560,6 +560,27 @@ Wake up, Neo... The Matrix has you.`
         return;
     }
 
+    // Check for developer/creator questions
+    const developerKeywords = [
+      "kdo vyvinul ai", "kdo tě vytvořil", "kdo tě naprogramoval", "kdo tě stvořil",
+      "kdo vyvinul", "kdo tě udělal", "kdo tě vyrobil", "kdo tě postavil",
+      "who created you", "who made you", "who developed you", "who built you",
+      "tvůj vývojář", "tvůj tvůrce", "tvůj stvořitel"
+    ];
+    
+    const lowerInput = trimmedInput.toLowerCase();
+    const isDeveloperQuestion = developerKeywords.some(keyword => lowerInput.includes(keyword));
+    
+    if (isDeveloperQuestion) {
+      addMessage("ai", `Ahoj! 👋 Jsem AI stvořená BlobyCZ, který mě naprogramoval a naučil spoustu věcí, abych ti mohl pomáhat a bavit se s tebou. 
+
+🧑‍💻 Můj tvůrce: BlobyCZ
+💬 Moje úloha: Být ti k dispozici, pomáhat s čímkoliv a bavit se!
+
+Mám rád, když spolu chatujeme! Máš nějakou otázku nebo si chceš popovídat?`);
+      return;
+    }
+
     // Send to AI
     setIsLoading(true);
     try {
