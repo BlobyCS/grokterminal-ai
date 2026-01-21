@@ -22,7 +22,6 @@ const BLOBY_ASCII = `
 
 const Terminal = () => {
   const [theme, setTheme] = useState<Theme>("green");
-  const [showMatrix, setShowMatrix] = useState(true);
   const [sessionId] = useState(() => Math.random().toString(36).substring(2, 15));
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -30,7 +29,7 @@ const Terminal = () => {
       type: "system",
       content: `${BLOBY_ASCII}
 ╔══════════════════════════════════════════════════════════╗
-║             BLOBY TERMINAL v1.2 - GROQ Interface          ║
+║             BLOBY TERMINAL v1.1 - GROQ Interface          ║
 ╠══════════════════════════════════════════════════════════╣
 ║  Powered by Llama 3.3 70B                                 ║
 ║  Type 'help' for available commands                       ║
@@ -128,7 +127,6 @@ const Terminal = () => {
 ║  Themes:                                                   ║
 ║    theme       - Show available themes                     ║
 ║    theme [n]   - Switch theme (green/amber/blue/matrix/pink)║
-║    background  - Toggle matrix background (on/off)         ║
 ║                                                            ║
 ║  Utilities:                                                ║
 ║    date        - Show current date and time                ║
@@ -175,36 +173,13 @@ const Terminal = () => {
 ║    • Supabase Backend                                      ║
 ║    • Tailwind CSS                                          ║
 ║                                                            ║
-║  🎨 VERZE: v1.2                                            ║
+║  🎨 VERZE: v1.1                                            ║
 ║  📅 2024-2025                                              ║
 ║                                                            ║
 ║  💬 "Stvořeno s láskou k technologiím."                    ║
 ║                                                            ║
 ╚══════════════════════════════════════════════════════════╝`
     );
-  };
-
-  const handleBackground = (args: string) => {
-    const arg = args.toLowerCase().trim();
-    
-    if (!arg) {
-      addMessage(
-        "system",
-        `Matrix background: ${showMatrix ? "ON ✓" : "OFF ✗"}
-Usage: background [on/off]`
-      );
-      return;
-    }
-
-    if (arg === "on") {
-      setShowMatrix(true);
-      addMessage("system", "✓ Matrix background enabled");
-    } else if (arg === "off") {
-      setShowMatrix(false);
-      addMessage("system", "✗ Matrix background disabled");
-    } else {
-      addMessage("system", `Unknown option: ${arg}\nUsage: background [on/off]`);
-    }
   };
 
   const handleTheme = (args: string) => {
@@ -391,7 +366,7 @@ Usage: theme [name]`
     
     const neofetchOutput = `    ____  __    ____  ______  __  __       bloby@groq
    / __ )/ /   / __ \\/ __ ) \\/ / / /       ─────────────
-  / __  / /   / / / / __  |\\  / / /        OS: BlobyOS v1.2
+  / __  / /   / / / / __  |\\  / / /        OS: BlobyOS v1.1
  / /_/ / /___/ /_/ / /_/ / / / /_/         Model: Llama 3.3 70B
 /_____/_____/\\____/_____/ /_/ (_)          Theme: ${theme}
                                            Shell: bloby-sh
@@ -450,7 +425,7 @@ Usage: theme [name]`
 
       addMessage(
         "system",
-        `📊 SESSION STATISTICS v1.2
+        `📊 SESSION STATISTICS v1.1
 ┌────────────────────────────────┐
 │  Total Sessions: ${String(sessions.size).padEnd(13)}│
 │  Total Messages: ${String(totalMessages).padEnd(13)}│
@@ -575,10 +550,6 @@ Wake up, Neo... The Matrix has you.`
         return;
       case "theme":
         handleTheme(argsString);
-        return;
-      case "background":
-      case "bg":
-        handleBackground(argsString);
         return;
       case "date":
         handleDate();
@@ -725,7 +696,7 @@ Mám rád, když spolu chatujeme! Máš nějakou otázku nebo si chceš popovíd
 
   return (
     <div className="terminal-container h-screen w-full crt-effect flex flex-col">
-      {showMatrix && <MatrixRain />}
+      <MatrixRain />
       <div className="scanlines" />
       
       {/* Terminal header */}
