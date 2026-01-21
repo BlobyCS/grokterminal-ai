@@ -30,7 +30,7 @@ const Terminal = () => {
       type: "system",
       content: `${BLOBY_ASCII}
 ╔══════════════════════════════════════════════════════════╗
-║             BLOBY TERMINAL v1.1 - GROQ Interface          ║
+║             BLOBY TERMINAL v1.2 - GROQ Interface          ║
 ╠══════════════════════════════════════════════════════════╣
 ║  Powered by Llama 3.3 70B                                 ║
 ║  Type 'help' for available commands                       ║
@@ -175,7 +175,7 @@ const Terminal = () => {
 ║    • Supabase Backend                                      ║
 ║    • Tailwind CSS                                          ║
 ║                                                            ║
-║  🎨 VERZE: v1.1                                            ║
+║  🎨 VERZE: v1.2                                            ║
 ║  📅 2024-2025                                              ║
 ║                                                            ║
 ║  💬 "Stvořeno s láskou k technologiím."                    ║
@@ -391,7 +391,7 @@ Usage: theme [name]`
     
     const neofetchOutput = `    ____  __    ____  ______  __  __       bloby@groq
    / __ )/ /   / __ \\/ __ ) \\/ / / /       ─────────────
-  / __  / /   / / / / __  |\\  / / /        OS: BlobyOS v1.1
+  / __  / /   / / / / __  |\\  / / /        OS: BlobyOS v1.2
  / /_/ / /___/ /_/ / /_/ / / / /_/         Model: Llama 3.3 70B
 /_____/_____/\\____/_____/ /_/ (_)          Theme: ${theme}
                                            Shell: bloby-sh
@@ -450,7 +450,7 @@ Usage: theme [name]`
 
       addMessage(
         "system",
-        `📊 SESSION STATISTICS v1.1
+        `📊 SESSION STATISTICS v1.2
 ┌────────────────────────────────┐
 │  Total Sessions: ${String(sessions.size).padEnd(13)}│
 │  Total Messages: ${String(totalMessages).padEnd(13)}│
