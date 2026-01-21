@@ -60,7 +60,6 @@ const Terminal = () => {
   }, []);
 
   useEffect(() => {
-    // Apply theme to document
     document.documentElement.className = theme === "green" ? "" : `theme-${theme}`;
   }, [theme]);
 
@@ -269,7 +268,6 @@ Unix: ${Math.floor(now.getTime() / 1000)}`
       return;
     }
     try {
-      // Safe math evaluation
       const sanitized = expression.replace(/[^0-9+\-*/().%\s]/g, "");
       const result = Function(`"use strict"; return (${sanitized})`)();
       addMessage("system", `${expression} = ${result}`);
@@ -322,7 +320,6 @@ Unix: ${Math.floor(now.getTime() / 1000)}`
       return;
     }
 
-    // Simple ASCII art generator
     const asciiChars: Record<string, string[]> = {
       A: ["  █  ", " █ █ ", "█████", "█   █", "█   █"],
       B: ["████ ", "█   █", "████ ", "█   █", "████ "],
@@ -567,20 +564,16 @@ Wake up, Neo... The Matrix has you.`
     const trimmedInput = input.trim();
     if (!trimmedInput || isLoading) return;
 
-    // Add to command history
     setCommandHistory((prev) => [...prev, trimmedInput]);
     setHistoryIndex(-1);
 
-    // Add user message
     addMessage("user", trimmedInput);
     setInput("");
 
-    // Parse command
     const [command, ...args] = trimmedInput.split(" ");
     const argsString = args.join(" ");
     const lowerCommand = command.toLowerCase();
 
-    // Handle built-in commands
     switch (lowerCommand) {
       case "clear":
         handleClear();
@@ -659,7 +652,6 @@ Wake up, Neo... The Matrix has you.`
         return;
     }
 
-    // Check for developer/creator questions
     const developerKeywords = [
       "kdo vyvinul ai",
       "kdo tě vytvořil",
@@ -699,10 +691,8 @@ Mám rád, když spolu chatujeme! Máš nějakou otázku nebo si chceš popovíd
       return;
     }
 
-    // Send to AI
     setIsLoading(true);
     try {
-      // Build conversation history for context
       const conversationHistory = messages
         .filter((m) => m.type === "user" || m.type === "ai")
         .slice(-10)
