@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import MatrixRain from "./MatrixRain";
 
 interface Message {
   id: string;
@@ -112,6 +113,7 @@ const Terminal = () => {
 ║    uptime      - Show terminal uptime                      ║
 ║    sessions    - Show session statistics                   ║
 ║    export      - Export chat history to file               ║
+║    about       - About the creator                         ║
 ║                                                            ║
 ║  Fun:                                                      ║
 ║    matrix      - Matrix rain animation                     ║
@@ -137,6 +139,45 @@ const Terminal = () => {
 ║    ↑/↓         - Navigate command history                  ║
 ║    Ctrl+L      - Clear terminal                            ║
 ║    Ctrl+C      - Cancel current input                      ║
+╚══════════════════════════════════════════════════════════╝`
+    );
+  };
+
+  const handleAbout = () => {
+    addMessage(
+      "system",
+      `
+╔══════════════════════════════════════════════════════════╗
+║                     🚀 ABOUT BLOBY                        ║
+╠══════════════════════════════════════════════════════════╣
+║                                                            ║
+║  👨‍💻 TVŮRCE: BlobyCZ                                        ║
+║                                                            ║
+║  ─────────────────────────────────────────────────────    ║
+║                                                            ║
+║  📜 HISTORIE PROJEKTU:                                     ║
+║                                                            ║
+║  Bloby Terminal vznikl jako experimentální projekt        ║
+║  spojující moderní AI technologie s nostalgickou          ║
+║  estetikou retro terminálů.                               ║
+║                                                            ║
+║  BlobyCZ tento projekt vytvořil s vizí přinést            ║
+║  uživatelům zábavný a funkční nástroj pro komunikaci      ║
+║  s umělou inteligencí v unikátním prostředí.              ║
+║                                                            ║
+║  ─────────────────────────────────────────────────────    ║
+║                                                            ║
+║  ⚡ TECHNOLOGIE:                                           ║
+║    • React + TypeScript                                    ║
+║    • Groq API (Llama 3.3 70B)                              ║
+║    • Supabase Backend                                      ║
+║    • Tailwind CSS                                          ║
+║                                                            ║
+║  🎨 VERZE: v1.1                                            ║
+║  📅 2024-2025                                              ║
+║                                                            ║
+║  💬 "Stvořeno s láskou k technologiím."                    ║
+║                                                            ║
 ╚══════════════════════════════════════════════════════════╝`
     );
   };
@@ -558,6 +599,9 @@ Wake up, Neo... The Matrix has you.`
       case "sessions":
         handleSessions();
         return;
+      case "about":
+        handleAbout();
+        return;
     }
 
     // Check for developer/creator questions
@@ -652,6 +696,7 @@ Mám rád, když spolu chatujeme! Máš nějakou otázku nebo si chceš popovíd
 
   return (
     <div className="terminal-container h-screen w-full crt-effect flex flex-col">
+      <MatrixRain />
       <div className="scanlines" />
       
       {/* Terminal header */}
