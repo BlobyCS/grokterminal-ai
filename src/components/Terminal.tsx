@@ -22,6 +22,7 @@ const BLOBY_ASCII = `
 
 const Terminal = () => {
   const [theme, setTheme] = useState<Theme>("green");
+  const [showMatrix, setShowMatrix] = useState(true);
   const [sessionId] = useState(() => Math.random().toString(36).substring(2, 15));
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -127,6 +128,7 @@ const Terminal = () => {
 ║  Themes:                                                   ║
 ║    theme       - Show available themes                     ║
 ║    theme [n]   - Switch theme (green/amber/blue/matrix/pink)║
+║    background  - Toggle matrix background (on/off)         ║
 ║                                                            ║
 ║  Utilities:                                                ║
 ║    date        - Show current date and time                ║
@@ -180,6 +182,29 @@ const Terminal = () => {
 ║                                                            ║
 ╚══════════════════════════════════════════════════════════╝`
     );
+  };
+
+  const handleBackground = (args: string) => {
+    const arg = args.toLowerCase().trim();
+    
+    if (!arg) {
+      addMessage(
+        "system",
+        `Matrix background: ${showMatrix ? "ON ✓" : "OFF ✗"}
+Usage: background [on/off]`
+      );
+      return;
+    }
+
+    if (arg === "on") {
+      setShowMatrix(true);
+      addMessage("system", "✓ Matrix background enabled");
+    } else if (arg === "off") {
+      setShowMatrix(false);
+      addMessage("system", "✗ Matrix background disabled");
+    } else {
+      addMessage("system", `Unknown option: ${arg}\nUsage: background [on/off]`);
+    }
   };
 
   const handleTheme = (args: string) => {
@@ -551,6 +576,10 @@ Wake up, Neo... The Matrix has you.`
       case "theme":
         handleTheme(argsString);
         return;
+      case "background":
+      case "bg":
+        handleBackground(argsString);
+        return;
       case "date":
         handleDate();
         return;
@@ -696,7 +725,7 @@ Mám rád, když spolu chatujeme! Máš nějakou otázku nebo si chceš popovíd
 
   return (
     <div className="terminal-container h-screen w-full crt-effect flex flex-col">
-      <MatrixRain />
+      {showMatrix && <MatrixRain />}
       <div className="scanlines" />
       
       {/* Terminal header */}
