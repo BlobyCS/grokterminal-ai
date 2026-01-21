@@ -830,26 +830,6 @@ Mám rád, když spolu chatujeme! Máš nějakou otázku nebo si chceš popovíd
           </div>
         </div>
       </div>
-
-      {/* Status bar */}
-      <div className="glass-panel px-5 py-2 flex items-center justify-between text-xs z-20 relative">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <div className="status-indicator" />
-            <span className="terminal-dim font-medium">GROQ API</span>
-          </div>
-          <span className="text-muted-foreground">•</span>
-          <span className="gradient-text font-semibold">Llama 3.3 70B</span>
-          <span className="text-muted-foreground">•</span>
-          <span className="terminal-dim">Theme: <span className="text-foreground">{theme}</span></span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="terminal-dim">{messages.filter((m) => m.type === "user").length} queries</span>
-          <span className="text-muted-foreground">•</span>
-          <span className="terminal-dim">v1.1</span>
-        </div>
-      </div>
-    </div>
   );
 };
 
